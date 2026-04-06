@@ -36,6 +36,11 @@
   <!-- Filters -->
   <div class="max-w-4xl mx-auto px-5 mt-5 flex flex-wrap items-center gap-3">
     <div class="flex items-center gap-1.5">
+      <label for="searchInput" class="text-xs font-semibold text-slate-500 whitespace-nowrap">検索</label>
+      <input type="text" id="searchInput" placeholder="キーワードで検索..."
+        class="text-sm px-3 py-2 border border-gray-200 rounded-lg bg-white outline-none focus:border-blue-500 transition-colors w-48">
+    </div>
+    <div class="flex items-center gap-1.5">
       <label for="categoryFilter" class="text-xs font-semibold text-slate-500 whitespace-nowrap">カテゴリ</label>
       <select id="categoryFilter"
         class="text-sm px-3 py-2 border border-gray-200 rounded-lg bg-white outline-none focus:border-blue-500 transition-colors">
@@ -71,7 +76,30 @@
 
   <!-- Main -->
   <div id="mainContent" class="hidden">
-    <div id="cardList" class="max-w-4xl mx-auto px-5 mt-5 pb-10 grid gap-3"></div>
+
+    <!-- Yesterday section -->
+    <div id="yesterdaySection" class="hidden max-w-4xl mx-auto px-5 mt-6">
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-bold text-blue-800">
+            <span id="yesterdayLabel"></span>の活用報告
+          </h2>
+          <span id="yesterdayCount" class="text-xs font-semibold px-3 py-1 bg-blue-100 text-blue-700 rounded-full"></span>
+        </div>
+        <div id="yesterdayCards" class="grid gap-3"></div>
+      </div>
+    </div>
+
+    <!-- Sort + All list -->
+    <div class="max-w-4xl mx-auto px-5 mt-6 flex items-center justify-between">
+      <h2 class="text-base font-bold text-slate-700">すべての報告</h2>
+      <button id="sortBtn"
+        class="text-xs font-semibold px-3 py-1.5 border border-gray-200 rounded-lg bg-white text-slate-600 hover:border-blue-500 hover:text-blue-600 transition-all cursor-pointer flex items-center gap-1">
+        <span id="sortIcon">↓</span> 新しい順
+      </button>
+    </div>
+
+    <div id="cardList" class="max-w-4xl mx-auto px-5 mt-3 pb-10 grid gap-3"></div>
     <div class="max-w-4xl mx-auto px-5 pb-16 text-center">
       <button id="loadMoreBtn"
         class="hidden text-sm font-semibold px-8 py-3 border border-gray-200 rounded-lg bg-white text-slate-800 hover:border-blue-500 hover:text-blue-600 transition-all cursor-pointer">

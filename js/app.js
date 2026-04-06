@@ -11,15 +11,18 @@ const PAGE_SIZE = 20;
 let allData = [];
 let filtered = [];
 let displayCount = PAGE_SIZE;
+let sortDesc = true; // true=新しい順, false=古い順
 
 // ---- Init ---- //
 document.addEventListener('DOMContentLoaded', () => {
   fetchData();
 
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
   document.getElementById('categoryFilter').addEventListener('change', applyFilters);
   document.getElementById('dateFrom').addEventListener('change', applyFilters);
   document.getElementById('dateTo').addEventListener('change', applyFilters);
   document.getElementById('resetBtn').addEventListener('click', resetFilters);
+  document.getElementById('sortBtn').addEventListener('click', toggleSort);
   document.getElementById('loadMoreBtn').addEventListener('click', loadMore);
 });
 
@@ -30,9 +33,9 @@ async function fetchData() {
     const res = await fetch(API_URL);
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
-    allData = json.data.map(d => ({ ...d, date: normalizeDate(d.date) }))
-      .sort((a, b) => b.date.localeCompare(a.date));
+    allData = json.data.map(d => ({ ...d, date: normalizeDate(d.date) }));
     buildCategoryOptions();
+    renderYesterday();
     applyFilters();
   } catch (e) {
     document.getElementById('cardList').innerHTML =
@@ -55,17 +58,20 @@ function buildCategoryOptions() {
 }
 
 function applyFilters() {
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
   const cat = document.getElementById('categoryFilter').value;
   const from = document.getElementById('dateFrom').value.replace(/-/g, '/');
   const to = document.getElementById('dateTo').value.replace(/-/g, '/');
 
   filtered = allData.filter(d => {
+    if (query && !`${d.summary} ${d.author} ${d.category}`.toLowerCase().includes(query)) return false;
     if (cat && d.category !== cat) return false;
     if (from && d.date < from) return false;
     if (to && d.date > to) return false;
     return true;
   });
 
+  sortFiltered();
   displayCount = PAGE_SIZE;
   render();
 }
@@ -74,7 +80,55 @@ function resetFilters() {
   document.getElementById('categoryFilter').value = '';
   document.getElementById('dateFrom').value = '';
   document.getElementById('dateTo').value = '';
+  document.getElementById('searchInput').value = '';
   applyFilters();
+}
+
+function sortFiltered() {
+  filtered.sort((a, b) => sortDesc
+    ? b.date.localeCompare(a.date)
+    : a.date.localeCompare(b.date));
+}
+
+function toggleSort() {
+  sortDesc = !sortDesc;
+  document.getElementById('sortIcon').textContent = sortDesc ? '↓' : '↑';
+  document.getElementById('sortBtn').lastChild.textContent = sortDesc ? ' 新しい順' : ' 古い順';
+  sortFiltered();
+  displayCount = PAGE_SIZE;
+  render();
+}
+
+// ---- Yesterday section ---- //
+function getYesterdayDate() {
+  const now = new Date();
+  // 朝8時基準: 8時前なら「昨日」は一昨日、8時以降なら「昨日」は前日
+  const base = new Date(now);
+  if (now.getHours() < 8) {
+    base.setDate(base.getDate() - 2);
+  } else {
+    base.setDate(base.getDate() - 1);
+  }
+  const y = base.getFullYear();
+  const m = String(base.getMonth() + 1).padStart(2, '0');
+  const d = String(base.getDate()).padStart(2, '0');
+  return `${y}/${m}/${d}`;
+}
+
+function renderYesterday() {
+  const yesterday = getYesterdayDate();
+  const items = allData.filter(d => d.date === yesterday);
+  const section = document.getElementById('yesterdaySection');
+
+  if (items.length === 0) {
+    section.classList.add('hidden');
+    return;
+  }
+
+  section.classList.remove('hidden');
+  document.getElementById('yesterdayLabel').textContent = yesterday;
+  document.getElementById('yesterdayCount').textContent = `${items.length}件`;
+  document.getElementById('yesterdayCards').innerHTML = items.map(cardHTML).join('');
 }
 
 // ---- Render ---- //
