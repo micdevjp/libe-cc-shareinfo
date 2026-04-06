@@ -3,7 +3,11 @@
    ======================================== */
 
 // GASデプロイ後に実際のURLに差し替える
-const API_URL = 'YOUR_GAS_WEB_APP_URL';
+// config.js で定義された API_URL を使用
+// config.js が未読み込みの場合のフォールバック
+if (typeof API_URL === 'undefined') {
+  console.error('config.js が読み込まれていません。config.sample.js を参考に config.js を作成してください。');
+}
 
 // 1ページあたりの表示件数
 const PAGE_SIZE = 20;
