@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClaudeCode 活用報告</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { animation: spin 0.7s linear infinite; }
+  </style>
+</head>
+<body class="bg-gray-50 text-slate-800 min-h-screen font-sans">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 py-6 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-5">
+      <h1 class="text-2xl font-bold tracking-tight">
+        <span class="text-blue-600">ClaudeCode</span> 活用報告
+      </h1>
+      <p class="text-sm text-slate-500 mt-1">リベシティ ClaudeCode部の活用事例まとめ</p>
+    </div>
+  </header>
+
+  <!-- Filters -->
+  <div class="max-w-4xl mx-auto px-5 mt-5 flex flex-wrap items-center gap-3">
+    <div class="flex items-center gap-1.5">
+      <label for="categoryFilter" class="text-xs font-semibold text-slate-500 whitespace-nowrap">カテゴリ</label>
+      <select id="categoryFilter"
+        class="text-sm px-3 py-2 border border-gray-200 rounded-lg bg-white outline-none focus:border-blue-500 transition-colors">
+        <option value="">すべて</option>
+      </select>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <label for="dateFrom" class="text-xs font-semibold text-slate-500 whitespace-nowrap">期間</label>
+      <input type="date" id="dateFrom"
+        class="text-sm px-3 py-2 border border-gray-200 rounded-lg bg-white outline-none focus:border-blue-500 transition-colors">
+      <span class="text-slate-400">〜</span>
+      <input type="date" id="dateTo"
+        class="text-sm px-3 py-2 border border-gray-200 rounded-lg bg-white outline-none focus:border-blue-500 transition-colors">
+    </div>
+    <button id="resetBtn"
+      class="text-xs px-3.5 py-2 rounded-lg bg-gray-200 text-slate-500 hover:bg-gray-300 transition-colors cursor-pointer">
+      リセット
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="max-w-4xl mx-auto px-5 mt-4 flex gap-3 flex-wrap">
+    <span id="totalCount" class="text-xs font-semibold px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full">-</span>
+    <span id="filteredCount" class="text-xs font-semibold px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full"></span>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading" class="text-center py-20 text-slate-500">
+    <div class="w-8 h-8 border-3 border-gray-200 border-t-blue-600 rounded-full spinner mx-auto mb-3"
+      style="border-width: 3px;"></div>
+    <p>データを読み込み中...</p>
+  </div>
+
+  <!-- Main -->
+  <div id="mainContent" class="hidden">
+    <div id="cardList" class="max-w-4xl mx-auto px-5 mt-5 pb-10 grid gap-3"></div>
+    <div class="max-w-4xl mx-auto px-5 pb-16 text-center">
+      <button id="loadMoreBtn"
+        class="hidden text-sm font-semibold px-8 py-3 border border-gray-200 rounded-lg bg-white text-slate-800 hover:border-blue-500 hover:text-blue-600 transition-all cursor-pointer">
+        もっと見る
+      </button>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
