@@ -30,7 +30,8 @@ async function fetchData() {
     const res = await fetch(API_URL);
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
-    allData = json.data.sort((a, b) => b.date.localeCompare(a.date));
+    allData = json.data.map(d => ({ ...d, date: normalizeDate(d.date) }))
+      .sort((a, b) => b.date.localeCompare(a.date));
     buildCategoryOptions();
     applyFilters();
   } catch (e) {
@@ -141,6 +142,18 @@ function loadMore() {
 function showLoading(show) {
   document.getElementById('loading').classList.toggle('hidden', !show);
   document.getElementById('mainContent').classList.toggle('hidden', show);
+}
+
+function normalizeDate(str) {
+  // "2026/03/19" 形式ならそのまま返す
+  if (/^\d{4}\/\d{2}\/\d{2}$/.test(str)) return str;
+  // GASのDate文字列などをパースして変換
+  const d = new Date(str);
+  if (isNaN(d)) return str;
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}/${m}/${day}`;
 }
 
 function escape(str) {

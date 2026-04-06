@@ -21,14 +21,23 @@ function doGet() {
     const headers = values[0];
     const rows = values.slice(1);
 
-    const data = rows.map(row => ({
-      id: row[0],
-      date: formatDate(row[1]),
-      author: row[2],
-      category: row[3],
-      link: row[4],
-      summary: row[5],
-    }));
+    const range = sheet.getDataRange();
+    const richValues = range.getRichTextValues();
+
+    const data = rows.map((row, i) => {
+      // リンク列(E列=index4)のRichTextからURLを取得
+      const richText = richValues[i + 1][4]; // +1 でヘッダー行をスキップ
+      const linkUrl = richText ? (richText.getLinkUrl() || '') : '';
+
+      return {
+        id: row[0],
+        date: formatDate(row[1]),
+        author: row[2],
+        category: row[3],
+        link: linkUrl,
+        summary: row[5],
+      };
+    });
 
     const output = JSON.stringify({
       success: true,
