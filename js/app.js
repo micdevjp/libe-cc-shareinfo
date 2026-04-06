@@ -35,7 +35,6 @@ async function fetchData() {
     if (!json.success) throw new Error(json.error);
     allData = json.data.map(d => ({ ...d, date: normalizeDate(d.date) }));
     buildCategoryOptions();
-    renderYesterday();
     applyFilters();
   } catch (e) {
     document.getElementById('cardList').innerHTML =
@@ -99,37 +98,6 @@ function toggleSort() {
   render();
 }
 
-// ---- Yesterday section ---- //
-function getYesterdayDate() {
-  const now = new Date();
-  // 朝8時基準: 8時前なら「昨日」は一昨日、8時以降なら「昨日」は前日
-  const base = new Date(now);
-  if (now.getHours() < 8) {
-    base.setDate(base.getDate() - 2);
-  } else {
-    base.setDate(base.getDate() - 1);
-  }
-  const y = base.getFullYear();
-  const m = String(base.getMonth() + 1).padStart(2, '0');
-  const d = String(base.getDate()).padStart(2, '0');
-  return `${y}/${m}/${d}`;
-}
-
-function renderYesterday() {
-  const yesterday = getYesterdayDate();
-  const items = allData.filter(d => d.date === yesterday);
-  const section = document.getElementById('yesterdaySection');
-
-  if (items.length === 0) {
-    section.classList.add('hidden');
-    return;
-  }
-
-  section.classList.remove('hidden');
-  document.getElementById('yesterdayLabel').textContent = yesterday;
-  document.getElementById('yesterdayCount').textContent = `${items.length}件`;
-  document.getElementById('yesterdayCards').innerHTML = items.map(cardHTML).join('');
-}
 
 // ---- Render ---- //
 function render() {
